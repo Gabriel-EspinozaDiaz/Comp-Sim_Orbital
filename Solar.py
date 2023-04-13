@@ -17,7 +17,7 @@ Base class to run the orbital simulation
 '''
 class Solar(object):
 
-    def __init__(self,satellites):
+    def __init__(self,satellite):
 
         inputdata = []
 
@@ -44,18 +44,8 @@ class Solar(object):
             colour = inputdata[i+3]
             self.bodies.append(Planet(name, mass, colour, orbit))
 
-        if satellites:
-            satdata = []
-            with open('parameters-satellites.txt', "r") as filein:
-                for line in filein:
-                    if (not line.startswith("#")):
-                        satdata.append(line.strip())
-            name = satdata[0]
-            mass = float(satdata[1])
-            colour = satdata[2]
-            velocity = [float(satdata[3]),float(satdata[4])]
-            
-            self.bodies.append(Satellite(name,mass,colour,velocity))
+        if satellite:
+            self.bodies.append(Satellite('Perseverance',1e-21,'silver',[2.6,3.7]))
 
         # set initial positions and velocities relative to sun
         # sum must be first element in bodies list!
@@ -110,15 +100,16 @@ class Solar(object):
         
         # check year and print year if new year for any planet
         for j in range(0, len(self.bodies)):
-            if (self.bodies[j].newYear()):
-               print(self.bodies[j].name.strip() + " " + str(self.bodies[j].year) + " years = " + str(time) + " earth years")
+            if type(self.bodies[j]) == Planet:
+                if (self.bodies[j].newYear()):
+                    print(self.bodies[j].name.strip() + " " + str(self.bodies[j].year) + " years = " + str(time) + " earth years")
 
                
                # in new year is earth year, also print total energy and export total energy
-               if (self.bodies[j].name.strip() == 'earth'):
- 
-                   energy = self.energy(True)*self.c
-                   print('Time = ' + str(time) + ' earth years. Total energy = ' + '{:.3e}'.format(energy) + ' J')
+                    if (self.bodies[j].name.strip() == 'earth'):
+    
+                        energy = self.energy(True)*self.c
+                        print('Time = ' + str(time) + ' earth years. Total energy = ' + '{:.3e}'.format(energy) + ' J')
 
 
         # checks doomsday alignment and prints year if true
@@ -262,6 +253,7 @@ class Solar(object):
 '''
 Solar Subclass that ignores gravitational influence of all bodies but the sun
 '''
+
 class SolarNullPlanets(Solar):
 
     def __init__(self, satellites):
@@ -335,6 +327,8 @@ class SolarNullPlanets(Solar):
 '''
 Runs many simulations to determine an optimal launch vector without the animation to improve performance
 '''
+
+"""
 class SolarSatelliteScan(object):
     
     def __init__(self,satellites):
@@ -367,18 +361,6 @@ class SolarSatelliteScan(object):
             colour = inputdata[i+3]
             self.bodies.append(Planet(name, mass, colour, orbit))
         
-        if satellites:
-            satdata = []
-            filein = open('parameters-satellites.txt', "r")
-            for line in filein.readlines():
-                if (not line.startswith("#")):
-                    satdata.append(line)
-            for i in range(0,len(satdata)-4,4):
-                name = satdata[i]
-                mass = satdata[i+1]
-                colour = satdata[i+2]
-                velocity = satdata[i+3]
-                self.bodies.append(Satellite(name,mass,colour,velocity))
                                 
         # set initial positions and velocities relative to sun
         # sum must be first element in bodies list!
@@ -391,3 +373,4 @@ class SolarSatelliteScan(object):
     def reset(self):
         self.bodies = self.rbodies
 
+"""
