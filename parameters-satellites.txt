@@ -1,0 +1,12 @@
+# data acquired from 
+# Atlas V data
+# name
+Perseverance
+# mass M⊕
+1e-21
+# colour
+silver
+# starting x-velocity (km/s)
+2.6
+# starting y-velocity (km/s)
+3.7

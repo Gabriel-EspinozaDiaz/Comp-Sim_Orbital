@@ -1,0 +1,93 @@
+# simulation data from http://ssd.jpl.nasa.gov/horizons.cgi
+#number of iterations
+100000
+# timestep (earth yr)
+# 300 sec good for mars moons
+0.001
+# Gravitational constant(AU^3 M⊙^-1 yr^-2)
+# M⊙ = 332946 M⊕
+# 39.5 / 332946
+1.18638e-4
+# sun data
+# name
+sun
+# mass M⊕
+332946
+# orbital radius AU
+0.0
+# colour
+y
+# planet data
+# mercury data
+# name
+mercury
+# mass M⊕
+0.06
+# orbital radius AU
+0.387
+# colour
+gray
+# venus data
+# name
+venus
+# mass M⊕
+0.82
+# orbital radius AU
+0.723
+# colour
+orange
+# earth data
+# name
+earth
+# mass M⊕
+1
+# orbital radius AU
+1.0
+# colour
+b
+# mars data
+# name
+mars
+# mass M⊕
+0.11
+# orbital radius AU
+1.524
+# colour
+r
+# outer planets
+# jupiter data
+# name
+jupiter
+# mass M⊕
+318
+# orbital radius AU
+5.2
+# colour
+chocolate
+# saturn
+# name
+#saturn
+# mass M⊕
+#95
+# orbital radius AU
+#9.5
+# colour
+pink
+# uranus
+# name
+#uranus
+# mass M⊕
+#14
+# orbital radius AU
+#19.2
+# colour
+#purple
+# neptune
+# name
+#neptune
+# mass M⊕
+#17
+# orbital radius AU
+#30.1
+# colour
+#blue
