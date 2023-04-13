@@ -96,9 +96,17 @@ mylist = pd.DataFrame(np.arange(0,1,0.1),[0,3,4,5,6,1,3,4,3,3])
 print(mylist)
 """
 
+"""
 vel = [2.6,3.7]
 print(vel)
 
 varr = [j*3.154e+7/(1.496e+8) for j in vel]
 
 print(varr)
+"""
+
+angle1 = np.array([0,1])
+angle2 = np.array([1,0])
+target = np.array([math.sqrt(2)/2,math.sqrt(2)/2])
+targetalt = np.array([0.70710678,0.70710678])
+

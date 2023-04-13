@@ -66,6 +66,8 @@ class Solar(object):
         # 1 AU = 1.496e+11 m
         self.c =(5.97219e+24*1.496e+11*1.496e+11)/(3.154e+7*3.154e+7)
 
+        # get orbital radius of outermost planet to set size of orbiting bodies and of plot
+        # hacky - should really check to see which moon is outermost
         for n in range(len(self.bodies)):
             if type(self.bodies[n]) == Planet:
                 self.maxP = self.bodies[n]
@@ -216,7 +218,7 @@ class Solar(object):
                 else:
                     self.patches.append(ax.add_patch(plt.Circle(self.bodies[i].r, 0.04*maxOrb, color = self.bodies[i].c, animated = True)))
             else:
-                    self.patches.append(ax.add_patch(plt.Circle(self.bodies[i].r, 0.005*maxOrb, color = self.bodies[i].c, animated = True)))
+                    self.patches.append(ax.add_patch(plt.Circle(self.bodies[i].r, 0.01*maxOrb, color = self.bodies[i].c, animated = True)))
         
         # set up the axes
         # scale axes so circle looks like a circle and set limits with border b for prettier plot
@@ -230,14 +232,6 @@ class Solar(object):
         anim = FuncAnimation(fig, self.animate, init_func = self.init, frames = self.niter, repeat = False, interval = 1, blit= True)
 
         plt.show()
-
-    def runWoAnimation(self):
-        
-        i = 0
-        while True:
-            i += self.dt
-            self.animate(i)
-
 
     def export(self):
         """
@@ -328,14 +322,10 @@ class SolarNullPlanets(Solar):
 Runs many simulations to determine an optimal launch vector without the animation to improve performance
 '''
 
-"""
 class SolarSatelliteScan(object):
     
-    def __init__(self,satellites):
-        
-        if not satellites:
-            raise Exception('Simulation cannot run without a satellite to scan')
-    
+    def __init__(self):
+
         inputdata = []
 
         filein = open('parameters-solar-nec.txt', "r")
@@ -360,17 +350,136 @@ class SolarSatelliteScan(object):
             orbit = float(inputdata[i+2])
             colour = inputdata[i+3]
             self.bodies.append(Planet(name, mass, colour, orbit))
-        
-                                
+            self.bodies.append(Satellite('Perseverance',1e-21,'silver',[2.6,3.7]))
+
         # set initial positions and velocities relative to sun
-        # sum must be first element in bodies list!
         for i in range(0, len(self.bodies)):
             self.bodies[i].initialise(self.G, self.bodies[0])
-        
-        #saves copies for when resetting the simulation
+    
+        # Constant for converting from earth masses to kg, seconds to years and AU to meters. 
+        self.c =(5.97219e+24*1.496e+11*1.496e+11)/(3.154e+7*3.154e+7)
+
+        # get orbital radius of outermost planet to set size of orbiting bodies and of plot
+        for n in range(len(self.bodies)):
+            if type(self.bodies[n]) == Planet:
+                self.maxP = self.bodies[n]
         self.rbodies = self.bodies.copy()
+    
+    def init(self):
+        """
+        initialiser for animator
+        """
+        return self.patches 
+
+    def animate(self, i):
+        """
+        Runs all calculations involved in moving planets, while checking for conditions:
+        - New year
+        - New Earth year
+        - Doomsday alignment
+        """
+        # keep track of time in earth years
+        time = (i+1)*self.dt
+
+        # update positions
+        for j in range(0, len(self.bodies)):
+            self.bodies[j].updatePos(self.G, self.dt)
+            self.patches[j].center = self.bodies[j].r
+            
+        # update velocities
+        for j in range(0, len(self.bodies)):
+            for k in range(0, len(self.bodies)):
+                if (j != k):
+                    self.bodies[j].updateVel(self.G, self.dt, self.bodies[k])
+        
+        # check year and print year if new year for any planet
+        for j in range(0, len(self.bodies)):
+            if type(self.bodies[j]) == Planet:
+                if (self.bodies[j].newYear()):
+                    print(self.bodies[j].name.strip() + " " + str(self.bodies[j].year) + " years = " + str(time) + " earth years")
+               # in new year is earth year, also print total energy and export total energy
+                    if (self.bodies[j].name.strip() == 'earth'):
+                        energy = self.energy(True)*self.c
+                        print('Time = ' + str(time) + ' earth years. Total energy = ' + '{:.3e}'.format(energy) + ' J')
+        return self.patches
+
+    def energy(self):
+        """
+        Returns the system's total energy if True, or stores the current potential, kinetic and total energy in the respective lists if False
+        """
+        ke = 0.0
+        pe = 0.0
+        for j in range(0, len(self.bodies)):
+            ke += self.bodies[j].kineticEnergy()
+            for k in range(0, len(self.bodies)):
+                if (k != j): #Ensures that the gravitational force being calculated is not 
+                    r = norm(self.bodies[k].r - self.bodies[j].r)
+                    pe -= self.G*self.bodies[j].m*self.bodies[k].m / r
+        # divide pe by two to avoid double counting
+        pe = pe / 2
+        totEnergy = ke + pe
+        return totEnergy
+
+
+    def calcTotalEnergy(self, i):
+        """
+        calcluates and prints the total energy of the system at the given iteration
+        """
+        ke = 0.0
+        pe = 0.0
+        for j in range(0, len(self.bodies)):
+            ke += self.bodies[j].kineticEnergy()
+            for k in range(0, len(self.bodies)):
+                if (k != j):
+                    r = norm(self.bodies[k].r - self.bodies[j].r)
+                    pe -= self.G*self.bodies[j].m*self.bodies[k].m / r
+        # divide pe by two to avoid double countin
+        pe = pe / 2
+        totEnergy = ke + pe
+        print('Time = ' + str(i) + ' iterations. Total energy = ' + '{:.3e}'.format(totEnergy)) 
+
+    def run(self):
+        """
+        Runs all steps needed for animation by matplotlib 
+        """
+
+        # set up the plot components        
+        fig = plt.figure(figsize=[10,10])
+        ax = plt.axes()
+
+        # create an array for patches (planet and moons)
+        self.patches = []
+
+        # get orbital radius of outermost planet to set size of orbiting bodies and of plot
+        # hacky - should really check to see which moon is outermost
+
+        maxOrb = math.sqrt(np.dot(self.maxP.r, self.maxP.r))
+
+        # add the planet, moons and satellites to the Axes and patches
+        for i in range(0, len(self.bodies)):
+            if type(self.bodies[i]) == Planet:
+                if (i == 0):
+                    self.patches.append(ax.add_patch(plt.Circle(self.bodies[i].r, 0.05*maxOrb, color = self.bodies[i].c, animated = True)))
+                elif (i > 0 and i < 5):
+                    self.patches.append(ax.add_patch(plt.Circle(self.bodies[i].r, 0.02*maxOrb, color = self.bodies[i].c, animated = True)))
+                else:
+                    self.patches.append(ax.add_patch(plt.Circle(self.bodies[i].r, 0.04*maxOrb, color = self.bodies[i].c, animated = True)))
+            else:
+                    self.patches.append(ax.add_patch(plt.Circle(self.bodies[i].r, 0.01*maxOrb, color = self.bodies[i].c, animated = True)))
+        
+        # set up the axes
+        # scale axes so circle looks like a circle and set limits with border b for prettier plot
+        b = 1.2
+        lim = maxOrb*b
+        print(lim)
+        ax.axis('scaled')
+        ax.set_xlim(-lim, lim)
+        ax.set_ylim(-lim, lim)
+                
+        anim = FuncAnimation(fig, self.animate, init_func = self.init, frames = self.niter, repeat = False, interval = 1, blit= True)
+
+        plt.show()
 
     def reset(self):
         self.bodies = self.rbodies
 
-"""

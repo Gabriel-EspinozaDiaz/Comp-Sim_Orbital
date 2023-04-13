@@ -120,7 +120,6 @@ class Satellite(Body):
         #self.v = np.array([j*sc for j in velocity])
         self.v = np.array(velocity)
 
-
     def initialise(self, G, p):
         pass
 
