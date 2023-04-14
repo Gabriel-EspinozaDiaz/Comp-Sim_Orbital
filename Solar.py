@@ -75,7 +75,7 @@ class Solar(object):
         for n in range(len(self.bodies)):
             if type(self.bodies[n]) == Planet:
                 self.maxP = self.bodies[n]
-        
+    
     def init(self):
         """
         initialiser for animator
@@ -88,6 +88,7 @@ class Solar(object):
         - New year
         - New Earth year
         - Doomsday alignment
+        - Mars distance
         """
         # keep track of time in earth years
         time = (i+1)*self.dt
@@ -255,7 +256,6 @@ class Solar(object):
 '''
 Solar Subclass that ignores gravitational influence of all bodies but the sun
 '''
-
 class SolarNullPlanets(Solar):
 
     def __init__(self, satellite):
@@ -325,147 +325,4 @@ class SolarNullPlanets(Solar):
     
     def export(self):
         return super().export()
-
-'''
-Runs many simulations to determine an optimal launch vector without the animation to improve performance
-'''
-
-class SolarSatelliteScan(object):
-    
-    def __init__(self):
-
-        inputdata = []
-
-        filein = open('parameters-solar-nec.txt', "r")
-        for line in filein.readlines():
-            if (not line.startswith("#")):
-                inputdata.append(line)
-        filein.close()
-
-        # simulation parameters
-        self.niter = int(inputdata[0]) #Iterations
-        self.dt = float(inputdata[1]) #Timesteps
-        self.G = float(inputdata[2]) #Gravitational constant
-
-        # list for mars and moons
-        self.bodies = []
-
-        # rest of input data is mars and moon data in four line 'chunks'
-        # first entry must be the last planet
-        for i in range(3, len(inputdata)-4, 4):
-            name = inputdata[i]
-            mass = float(inputdata[i+1])
-            orbit = float(inputdata[i+2])
-            colour = inputdata[i+3]
-            self.bodies.append(Planet(name, mass, colour, orbit))
-            self.bodies.append(Satellite('Perseverance',1e-21,'silver',[0,6.0]))
-            
-        # Calculates the distance between mars and the earth
-        # If the satellite's distance from mars is greater than this limit, the simulation will restart. 
-        self.satlim = self.bodies[3]
-
-        # set initial positions and velocities relative to sun
-        for i in range(0, len(self.bodies)):
-            self.bodies[i].initialise(self.G, self.bodies[0])
-    
-        # Constant for converting from earth masses to kg, seconds to years and AU to meters. 
-        self.c =(5.97219e+24*1.496e+11*1.496e+11)/(3.154e+7*3.154e+7)
-
-        # get orbital radius of outermost planet to set size of orbiting bodies and of plot
-        for n in range(len(self.bodies)):
-            if type(self.bodies[n]) == Planet:
-                self.maxP = self.bodies[n]
-        self.rbodies = self.bodies.copy()
-        self.marsDist = np.linalg.norm(np.array([1.524,0])-[1.0001, 0])
-    
-    def init(self):
-        """
-        initialiser for animator
-        """
-        return self.patches 
-
-    def animate(self, i):
-        """
-        Runs all calculations involved in moving planets, while checking for conditions:
-        - New year
-        - New Earth year
-        - Doomsday alignment
-        """
-        # keep track of time in earth years
-        time = (i+1)*self.dt
-
-        # update positions
-        for j in range(0, len(self.bodies)):
-            self.bodies[j].updatePos(self.G, self.dt)
-            self.patches[j].center = self.bodies[j].r
-            
-        # update velocities
-        for j in range(0, len(self.bodies)):
-            for k in range(0, len(self.bodies)):
-                if (j != k):
-                    self.bodies[j].updateVel(self.G, self.dt, self.bodies[k])
-        
-
-        n_marDist = np.linalg.norm(self.bodies[4].getPos()-self.bodies[6].getPos())
-        if n_marDist < self.marsDist:
-            self.marsDist = n_marDist
-        else:
-            print(f'lowest distance was {self.marsDist} at {time} years')
-            self.reset()
-
-        # check year and print year if new year for any planet
-        for j in range(0, len(self.bodies)):
-            if type(self.bodies[j]) == Planet:
-                if (self.bodies[j].newYear()):
-                    print(self.bodies[j].name.strip() + " " + str(self.bodies[j].year) + " years = " + str(time) + " earth years")
-                    if (self.bodies[j].name.strip() == 'earth'):
-                        print(f'{time} earth year(s) pass')
-        return self.patches
-
-    def run(self):
-        """
-        Runs all steps needed for animation by matplotlib 
-        """
-
-        # set up the plot components        
-        fig = plt.figure(figsize=[10,10])
-        ax = plt.axes()
-
-        # create an array for patches (planet and moons)
-        self.patches = []
-
-        # get orbital radius of outermost planet to set size of orbiting bodies and of plot
-        # hacky - should really check to see which moon is outermost
-
-        maxOrb = math.sqrt(np.dot(self.maxP.r, self.maxP.r))
-
-        # add the planet, moons and satellites to the Axes and patches
-        for i in range(0, len(self.bodies)):
-            if type(self.bodies[i]) == Planet:
-                if (i == 0):
-                    self.patches.append(ax.add_patch(plt.Circle(self.bodies[i].r, 0.05*maxOrb, color = self.bodies[i].c, animated = True)))
-                elif (i > 0 and i < 5):
-                    self.patches.append(ax.add_patch(plt.Circle(self.bodies[i].r, 0.02*maxOrb, color = self.bodies[i].c, animated = True)))
-                else:
-                    self.patches.append(ax.add_patch(plt.Circle(self.bodies[i].r, 0.04*maxOrb, color = self.bodies[i].c, animated = True)))
-            else:
-                    self.patches.append(ax.add_patch(plt.Circle(self.bodies[i].r, 0.01*maxOrb, color = self.bodies[i].c, animated = True)))
-        
-        # set up the axes
-        # scale axes so circle looks like a circle and set limits with border b for prettier plot
-        b = 1.2
-        lim = maxOrb*b
-        print(lim)
-        ax.axis('scaled')
-        ax.set_xlim(-lim, lim)
-        ax.set_ylim(-lim, lim)
-                
-        anim = FuncAnimation(fig, self.animate, init_func = self.init, frames = self.niter, repeat = False, interval = 1, blit= True)
-
-        plt.show()
-
-    def reset(self):
-        self.__init__()
-        self.bodies[-1].altAngle(0.0174533)
-        
 
