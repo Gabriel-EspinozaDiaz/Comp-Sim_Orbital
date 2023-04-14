@@ -133,9 +133,6 @@ class Satellite(Body):
         # set acc_old = acc to start Beeman
         self.a_old = self.a
     
-    def getPos(self):
-        return super().getPos()
-
     def updatePos(self, G, dt):
         return super().updatePos(G, dt)
 
