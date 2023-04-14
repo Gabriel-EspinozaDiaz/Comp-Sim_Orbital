@@ -251,9 +251,6 @@ class Solar(object):
         with pd.ExcelWriter('energyData.xlsx') as writer:
             export.to_excel(writer, sheet_name='sheet1')
 
-    def marsProx(self):
-        
-            return 
 
 '''
 Solar Subclass that ignores gravitational influence of all bodies but the sun
