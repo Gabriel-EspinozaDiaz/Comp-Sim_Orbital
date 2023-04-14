@@ -105,6 +105,8 @@ varr = [j*3.154e+7/(1.496e+8) for j in vel]
 print(varr)
 """
 
+
+"""
 angle1 = np.array([0,1])
 angle2 = np.array([1,0])
 target = np.array([math.sqrt(2)/2,math.sqrt(2)/2])
@@ -113,8 +115,18 @@ targetalt = np.array([0.70710678,0.70710678])
 print((5.97219e+24*1.496e+11*1.496e+11)/(3.154e+7*3.154e+7))
 
 vel = [2.6,3.7]
-kPerSec = 11.176
+kPerSec = 11
 AUunits = kPerSec*(3.154e+7/(1.496e+8))
 dist = np.linalg.norm(vel)
 print(dist)
 print(AUunits)
+"""
+
+vect = np.array([1,2])
+
+
+angle = math.atan2(vect[1], vect[0])
+
+print(math.cos(angle)*np.linalg.norm(vect))
+print(math.sin(angle)*np.linalg.norm(vect))
+

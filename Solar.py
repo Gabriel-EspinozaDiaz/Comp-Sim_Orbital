@@ -44,8 +44,12 @@ class Solar(object):
             colour = inputdata[i+3]
             self.bodies.append(Planet(name, mass, colour, orbit))
 
+        self.peak = False
         if satellite:
-            self.bodies.append(Satellite('Perseverance',1e-21,'silver',[2.6,3.7]))
+            self.bodies.append(Satellite('Perseverance',1e-21,'silver',[4.2,4.3]))
+            #Determines the starting distance between Mars and the Satellite
+            self.marsDist = 100
+            
 
         # set initial positions and velocities relative to sun
         # sum must be first element in bodies list!
@@ -71,6 +75,10 @@ class Solar(object):
         for n in range(len(self.bodies)):
             if type(self.bodies[n]) == Planet:
                 self.maxP = self.bodies[n]
+        
+
+
+
 
     def init(self):
         """
@@ -111,6 +119,13 @@ class Solar(object):
                         energy = self.energy(True)*self.c
                         print('Time = ' + str(time) + ' earth years. Total energy = ' + '{:.3e}'.format(energy) + ' J')
 
+        if not self.peak and type(self.bodies[-1])==Satellite:
+            n_marDist = np.linalg.norm(self.bodies[4].getPos()-self.bodies[6].getPos())
+            if n_marDist < self.marsDist:
+                self.marsDist = n_marDist
+            else:
+                print(f'lowest distance was {self.marsDist}')
+                self.peak = True
 
         # checks doomsday alignment and prints year if true
         if self.dcool == False:
@@ -240,6 +255,10 @@ class Solar(object):
         with pd.ExcelWriter('energyData.xlsx') as writer:
             export.to_excel(writer, sheet_name='sheet1')
 
+    def marsProx(self):
+        
+            return 
+
 '''
 Solar Subclass that ignores gravitational influence of all bodies but the sun
 '''
@@ -346,7 +365,11 @@ class SolarSatelliteScan(object):
             orbit = float(inputdata[i+2])
             colour = inputdata[i+3]
             self.bodies.append(Planet(name, mass, colour, orbit))
-            self.bodies.append(Satellite('Perseverance',1e-21,'silver',[2.6,3.7]))
+            self.bodies.append(Satellite('Perseverance',1e-21,'silver',[0,6.0]))
+            
+        # Calculates the distance between mars and the earth
+        # If the satellite's distance from mars is greater than this limit, the simulation will restart. 
+        self.satlim = self.bodies[3]
 
         # set initial positions and velocities relative to sun
         for i in range(0, len(self.bodies)):
@@ -416,7 +439,6 @@ class SolarSatelliteScan(object):
         totEnergy = ke + pe
         return totEnergy
 
-
     def calcTotalEnergy(self, i):
         """
         calcluates and prints the total energy of the system at the given iteration
@@ -478,4 +500,5 @@ class SolarSatelliteScan(object):
 
     def reset(self):
         self.bodies = self.rbodies
+        
 

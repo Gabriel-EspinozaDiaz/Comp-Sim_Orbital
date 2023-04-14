@@ -24,7 +24,8 @@ class Body(ABC):
         pass
 
     def getPos(self):
-        return (self.r)
+        return self.r
+        
 
     def updatePos(self, G, dt):
         # keep old position to check for year
@@ -87,6 +88,7 @@ class Planet(Body):
 
     def getPos(self):
         return super().getPos()
+        
 
     def updatePos(self, G, dt):
         return super().updatePos(G, dt)
@@ -124,7 +126,6 @@ class Satellite(Body):
         self.v = np.array(velocity)
 
     def initialise(self, G, p):
-        pass
 
         #inital position, initial coords = (Earth starting position, 0) + 0.001 earth units at the self.v angle
         self.r = np.array([1.0001, 0])
@@ -144,3 +145,16 @@ class Satellite(Body):
     
     def kineticEnergy(self):
         return super().kineticEnergy()
+    
+    def getPos(self):
+        return super().getPos()
+        
+    
+    def getVel(self):
+        return self.v
+    
+    def altAngle(self,alt : float):
+        n_angle = math.atan2(self.v[1],self.v[0]) + alt
+        x = math.cos()
+        y = math.sin(n_angle)
+        self.v = np.linalg.norm(self.v)*np.array([x,y])
