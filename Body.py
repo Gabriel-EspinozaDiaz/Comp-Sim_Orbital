@@ -117,10 +117,6 @@ class Satellite(Body):
     def __init__(self, name, mass, colour, velocity):
         super().__init__(name, mass, colour)
 
-        #Converts from km to AU and seconds to years
-        # 1 AU = 1.496e+8 km
-        #sc = (3.154e+7/1.496e+8)
-        #self.v = np.array([j*sc for j in velocity])
         self.v = np.array(velocity)
 
     def initialise(self, G, p):
