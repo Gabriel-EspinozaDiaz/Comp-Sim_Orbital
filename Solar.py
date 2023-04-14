@@ -50,7 +50,6 @@ class Solar(object):
             #Determines the starting distance between Mars and the Satellite
             self.marsDist = np.linalg.norm(np.array([1.524,0])-[1.0001, 0])
             
-
         # set initial positions and velocities relative to sun
         # sum must be first element in bodies list!
         for i in range(0, len(self.bodies)):
@@ -251,7 +250,6 @@ class Solar(object):
         export = pd.DataFrame(energyReadings, index = np.arange(0,len(self.eData)*self.dt,self.dt))
         with pd.ExcelWriter('energyData.xlsx') as writer:
             export.to_excel(writer, sheet_name='sheet1')
-
 
 '''
 Solar Subclass that ignores gravitational influence of all bodies but the sun

@@ -147,7 +147,6 @@ class Satellite(Body):
     def getPos(self):
         return super().getPos()
         
-    
     def getVel(self):
         return self.v
     
