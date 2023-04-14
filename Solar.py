@@ -108,7 +108,7 @@ class Solar(object):
         for j in range(0, len(self.bodies)):
             if type(self.bodies[j]) == Planet:
                 if (self.bodies[j].newYear()):
-                    print(self.bodies[j].name.strip() + " " + str(self.bodies[j].year) + " years = " + str(time) + " earth years")
+                    print(self.bodies[j].name.strip() + " " + str(self.bodies[j].year) + " years = " + str(round(time*365)) + " days")
                # in new year is earth year, also print total energy and export total energy
                     if (self.bodies[j].name.strip() == 'earth'):
     
