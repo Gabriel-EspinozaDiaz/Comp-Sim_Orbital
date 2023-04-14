@@ -61,7 +61,7 @@ class Solar(object):
         self.pData = []
 
         # Constant for converting from earth masses to kg, seconds to years and AU to meters. 
-        # Used for converting arbitrary measure (AU^2 yr^-2) to joules (kg m^2 s-2) in energy readnings
+        # Used for converting arbitrary measure (AU^2 yr^-2) to joules (kg m^2 s^-2) in energy readings
         # 1 earth mass = 5.97219e24 kg
         # 1 AU = 1.496e+11 m
         self.c =(5.97219e+24*1.496e+11*1.496e+11)/(3.154e+7*3.154e+7)
@@ -105,8 +105,6 @@ class Solar(object):
             if type(self.bodies[j]) == Planet:
                 if (self.bodies[j].newYear()):
                     print(self.bodies[j].name.strip() + " " + str(self.bodies[j].year) + " years = " + str(time) + " earth years")
-
-               
                # in new year is earth year, also print total energy and export total energy
                     if (self.bodies[j].name.strip() == 'earth'):
     
@@ -250,8 +248,8 @@ Solar Subclass that ignores gravitational influence of all bodies but the sun
 
 class SolarNullPlanets(Solar):
 
-    def __init__(self, satellites):
-        super().__init__(satellites)
+    def __init__(self, satellite):
+        super().__init__(satellite)
     
     def init(self):
         return super().init()

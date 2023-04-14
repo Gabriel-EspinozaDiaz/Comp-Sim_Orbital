@@ -1,5 +1,5 @@
 from Solar import Solar
-
+from Solar import SolarSatelliteScan
 from Solar import SolarNullPlanets
 
 def main():
@@ -7,7 +7,7 @@ def main():
     
     s = Solar(satellite=True)
 
-    s.runWoAnimation()
+    s.run()
     
 
 main()

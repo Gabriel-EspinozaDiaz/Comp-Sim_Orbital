@@ -110,3 +110,11 @@ angle2 = np.array([1,0])
 target = np.array([math.sqrt(2)/2,math.sqrt(2)/2])
 targetalt = np.array([0.70710678,0.70710678])
 
+print((5.97219e+24*1.496e+11*1.496e+11)/(3.154e+7*3.154e+7))
+
+vel = [2.6,3.7]
+kPerSec = 11.176
+AUunits = kPerSec*(3.154e+7/(1.496e+8))
+dist = np.linalg.norm(vel)
+print(dist)
+print(AUunits)
