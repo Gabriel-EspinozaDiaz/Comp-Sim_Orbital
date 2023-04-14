@@ -122,7 +122,7 @@ class Solar(object):
                 self.dcool = False
         
         # exports energy readings at the specified point 
-        if time == 1.0:
+        if time == 20.0:
             self.export()
 
         return self.patches
