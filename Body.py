@@ -89,7 +89,6 @@ class Planet(Body):
     def getPos(self):
         return super().getPos()
         
-
     def updatePos(self, G, dt):
         return super().updatePos(G, dt)
 

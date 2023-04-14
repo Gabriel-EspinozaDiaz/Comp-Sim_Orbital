@@ -48,7 +48,7 @@ class Solar(object):
         if satellite:
             self.bodies.append(Satellite('Perseverance',1e-21,'silver',[4.2,4.3]))
             #Determines the starting distance between Mars and the Satellite
-            self.marsDist = 100
+            self.marsDist = np.linalg.norm(np.array([1.524,0])-[1.0001, 0])
             
 
         # set initial positions and velocities relative to sun
@@ -76,10 +76,6 @@ class Solar(object):
             if type(self.bodies[n]) == Planet:
                 self.maxP = self.bodies[n]
         
-
-
-
-
     def init(self):
         """
         initialiser for animator
@@ -124,7 +120,7 @@ class Solar(object):
             if n_marDist < self.marsDist:
                 self.marsDist = n_marDist
             else:
-                print(f'lowest distance was {self.marsDist}')
+                print(f'lowest distance was {self.marsDist} at {time} years')
                 self.peak = True
 
         # checks doomsday alignment and prints year if true
@@ -411,50 +407,22 @@ class SolarSatelliteScan(object):
                 if (j != k):
                     self.bodies[j].updateVel(self.G, self.dt, self.bodies[k])
         
+
+        n_marDist = np.linalg.norm(self.bodies[4].getPos()-self.bodies[6].getPos())
+        if n_marDist < self.marsDist:
+            self.marsDist = n_marDist
+        else:
+            print(f'lowest distance was {self.marsDist} at {time} years')
+            self.reset()
+
         # check year and print year if new year for any planet
         for j in range(0, len(self.bodies)):
             if type(self.bodies[j]) == Planet:
                 if (self.bodies[j].newYear()):
                     print(self.bodies[j].name.strip() + " " + str(self.bodies[j].year) + " years = " + str(time) + " earth years")
-               # in new year is earth year, also print total energy and export total energy
                     if (self.bodies[j].name.strip() == 'earth'):
-                        energy = self.energy(True)*self.c
-                        print('Time = ' + str(time) + ' earth years. Total energy = ' + '{:.3e}'.format(energy) + ' J')
+                        print(f'{time} earth year(s) pass')
         return self.patches
-
-    def energy(self):
-        """
-        Returns the system's total energy if True, or stores the current potential, kinetic and total energy in the respective lists if False
-        """
-        ke = 0.0
-        pe = 0.0
-        for j in range(0, len(self.bodies)):
-            ke += self.bodies[j].kineticEnergy()
-            for k in range(0, len(self.bodies)):
-                if (k != j): #Ensures that the gravitational force being calculated is not 
-                    r = norm(self.bodies[k].r - self.bodies[j].r)
-                    pe -= self.G*self.bodies[j].m*self.bodies[k].m / r
-        # divide pe by two to avoid double counting
-        pe = pe / 2
-        totEnergy = ke + pe
-        return totEnergy
-
-    def calcTotalEnergy(self, i):
-        """
-        calcluates and prints the total energy of the system at the given iteration
-        """
-        ke = 0.0
-        pe = 0.0
-        for j in range(0, len(self.bodies)):
-            ke += self.bodies[j].kineticEnergy()
-            for k in range(0, len(self.bodies)):
-                if (k != j):
-                    r = norm(self.bodies[k].r - self.bodies[j].r)
-                    pe -= self.G*self.bodies[j].m*self.bodies[k].m / r
-        # divide pe by two to avoid double countin
-        pe = pe / 2
-        totEnergy = ke + pe
-        print('Time = ' + str(i) + ' iterations. Total energy = ' + '{:.3e}'.format(totEnergy)) 
 
     def run(self):
         """
@@ -500,5 +468,6 @@ class SolarSatelliteScan(object):
 
     def reset(self):
         self.bodies = self.rbodies
+        self.bodies[-1].altAngle()
         
 
