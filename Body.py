@@ -23,6 +23,9 @@ class Body(ABC):
     def initialise(self, G, p):
         pass
 
+    def getPos(self):
+        return (self.r)
+
     def updatePos(self, G, dt):
         # keep old position to check for year
         self.r_old = self.r
@@ -83,7 +86,7 @@ class Planet(Body):
         self.a_old = self.a
 
     def getPos(self):
-        return (self.r)
+        return super().getPos()
 
     def updatePos(self, G, dt):
         return super().updatePos(G, dt)
@@ -130,6 +133,9 @@ class Satellite(Body):
         # set acc_old = acc to start Beeman
         self.a_old = self.a
     
+    def getPos(self):
+        return super().getPos()
+
     def updatePos(self, G, dt):
         return super().updatePos(G, dt)
 

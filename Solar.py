@@ -180,7 +180,7 @@ class Solar(object):
         avg = np.mean(angles,axis=0)
         for j in range(len(angles)):
             #Condition based on 5º in radians, 0.0872665
-            if np.arccos(np.clip(np.dot(avg,angles[j]),-1.0,1.0)) > 0.0872665:
+            if np.arccos(np.clip(np.dot(avg,angles[j]),-1.0,1.0)) > 0.0436332:
                 doomsday = False
                 break
         if doomsday == True:
