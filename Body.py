@@ -26,7 +26,6 @@ class Body(ABC):
     def getPos(self):
         return self.r
         
-
     def updatePos(self, G, dt):
         # keep old position to check for year
         self.r_old = self.r
@@ -154,6 +153,6 @@ class Satellite(Body):
     
     def altAngle(self,alt : float):
         n_angle = math.atan2(self.v[1],self.v[0]) + alt
-        x = math.cos()
+        x = math.cos(n_angle)
         y = math.sin(n_angle)
         self.v = np.linalg.norm(self.v)*np.array([x,y])

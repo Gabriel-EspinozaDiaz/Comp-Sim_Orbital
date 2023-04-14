@@ -4,8 +4,8 @@ from Solar import SolarNullPlanets
 
 def main():
 
-    s = Solar(satellite=True)
-    #s = SolarSatelliteScan()
+    #s = Solar(satellite=True)
+    s = SolarSatelliteScan()
 
     s.run()
     

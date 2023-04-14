@@ -379,6 +379,7 @@ class SolarSatelliteScan(object):
             if type(self.bodies[n]) == Planet:
                 self.maxP = self.bodies[n]
         self.rbodies = self.bodies.copy()
+        self.marsDist = np.linalg.norm(np.array([1.524,0])-[1.0001, 0])
     
     def init(self):
         """
@@ -467,7 +468,7 @@ class SolarSatelliteScan(object):
         plt.show()
 
     def reset(self):
-        self.bodies = self.rbodies
-        self.bodies[-1].altAngle()
+        self.__init__()
+        self.bodies[-1].altAngle(0.0174533)
         
 
