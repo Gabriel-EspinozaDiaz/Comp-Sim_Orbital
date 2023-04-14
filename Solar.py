@@ -122,7 +122,7 @@ class Solar(object):
                 self.dcool = False
         
         # exports energy readings at the specified point 
-        if time == 99.9:
+        if time == 1.0:
             self.export()
 
         return self.patches
@@ -237,10 +237,8 @@ class Solar(object):
         """
         energyReadings = {'Total Energy':self.eData,'Kinetic Energy':self.kData,'Potential Energy':self.pData}
         export = pd.DataFrame(energyReadings, index = np.arange(0,len(self.eData)*self.dt,self.dt))
-        writer = pd.ExcelWriter('energyData.xlsx') 
-        export.to_excel(writer, sheet_name = 'first_df')
-        export.to_excel(writer, sheet_name = 'second_df')
-        writer.save()
+        with pd.ExcelWriter('energyData.xlsx') as writer:
+            export.to_excel(writer, sheet_name='sheet1')
 
 '''
 Solar Subclass that ignores gravitational influence of all bodies but the sun
