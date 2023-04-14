@@ -5,7 +5,7 @@ from Solar import SolarNullPlanets
 def main():
 
     
-    s = Solar(satellite=True)
+    s = Solar(satellite=False)
 
     s.run()
     
